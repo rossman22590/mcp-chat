@@ -6,7 +6,7 @@ import { useEffectiveSession } from '@/hooks/use-effective-session'
 import { ModelSelector } from "@/components/model-selector"
 import { SidebarToggle } from "@/components/sidebar-toggle"
 import { Button } from "@/components/ui/button"
-import { GitHubButton } from "@/components/github-button"
+import { ManageAccountButton } from "@/components/manage-account-button"
 import { DocsButton } from "@/components/docs-button"
 import { memo } from "react"
 import { PlusIcon } from "./icons"
@@ -131,7 +131,7 @@ function PureChatHeader({
       <div className="flex-1 hidden md:block"></div>
 
       <div className="mt-1 hidden md:flex gap-2 ml-auto">
-        <GitHubButton style="secondary" />
+        <ManageAccountButton style="secondary" />
         <DocsButton style="main" />
       </div>
     </header>

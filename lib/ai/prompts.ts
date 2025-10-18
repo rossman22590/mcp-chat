@@ -32,7 +32,7 @@ Do not update document right after creating it. Wait for user feedback or reques
 `
 
 export const pdToolsPrompt = `<tools>
-  You have access to tools provided by the Pipedream MCP server, as well as a \`web_search\` tool for searching the web.
+  You have access to tools provided by the Machine MCP server, as well as a \`web_search\` tool for searching the web.
 
   <task_handling>
     <overview>

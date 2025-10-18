@@ -22,7 +22,7 @@ export const Overview = () => {
         <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center">
           <p className="flex flex-row justify-center gap-4 items-center">
             <Image
-              src="/images/pipedream-icon.svg"
+              src="/images/pipedream-icon.png"
               alt="Pipedream"
               width={32}
               height={32}
@@ -36,10 +36,10 @@ export const Overview = () => {
             This app uses{" "}
             <Link
               className="font-medium underline underline-offset-4"
-              href="https://pipedream.com/docs/connect/mcp/developers"
+              href="https://machine.myapps.ai"
               target="_blank"
             >
-              Pipedream MCP
+              Machine MCP
             </Link>{" "}
             to let you chat with any app.
           </p>
@@ -47,12 +47,12 @@ export const Overview = () => {
             With {" "}
             <Link
               className="font-medium underline underline-offset-4"
-              href="https://mcp.pipedream.com/"
+              href="https://machine.myapps.ai/"
               target="_blank"
             >
               2,800+ built-in APIs
             </Link>{" "}
-             {" "}and 10k+ tools, use Pipedream MCP to supercharge your AI app or agent.
+             {" "}and 10k+ tools, use Machine MCP to supercharge your AI app or agent.
           </p>
         </div>
         <InfoBanner isAuthDisabled={isAuthDisabled} isPersistenceDisabled={isPersistenceDisabled} />

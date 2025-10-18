@@ -1,10 +1,10 @@
 <a href="https://chat.pipedream.com/">
-  <img alt="MCP Chat by Pipedream" src="app/(chat)/opengraph-image.png">
-  <h1 align="center">MCP Chat by Pipedream</h1>
+  <img alt="MCP Chat  by Machine" src="app/(chat)/opengraph-image.png">
+  <h1 align="center">MCP Chat  by Machine</h1>
 </a>
 
 <p align="center">
-  MCP Chat is a free, open-source chat app built using the AI SDK, and Pipedream MCP, which provides access to nearly 3,000 APIs and more than 10,000 tools. Use this as a reference to build powerful AI chat applications.
+  MCP Chat is a free, open-source chat app built using the AI SDK, and Machine MCP, which provides access to nearly 3,000 APIs and more than 10,000 tools. Use this as a reference to build powerful AI chat applications.
 </p>
 
 <p align="center">

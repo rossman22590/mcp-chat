@@ -96,27 +96,12 @@ export function InfoBanner({ isAuthDisabled: isAuthDisabledMode, isPersistenceDi
 
   return (
     <div className={`flex flex-col gap-2 ${className}`}>
-      {showMainBanner && (
+      {showMainBanner && isAuthDisabledMode && (
         <Banner 
-          theme={isAuthDisabledMode ? 'warning' : 'info'} 
+          theme='warning' 
           onDismiss={() => dismissBanner('main')}
         >
-          {isAuthDisabledMode ? (
-            <span>User sign-in is currently disabled, make sure to enable before shipping to production.</span>
-          ) : (
-            <span>
-              This demo app showcases how you can integrate Pipedream&apos;s MCP server into your AI app.{' '}
-              <a 
-                href="https://pipedream.com/docs/connect/mcp/developers" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 hover:underline hover:text-blue-600 dark:hover:text-blue-400 font-semibold"
-              >
-                Check out our docs
-              </a>
-              {' '} to get started.
-            </span>
-          )}
+          <span>User sign-in is currently disabled, make sure to enable before shipping to production.</span>
         </Banner>
       )}
 
