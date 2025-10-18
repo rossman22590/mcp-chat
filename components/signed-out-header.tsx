@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { ManageAccountButton } from '@/components/manage-account-button';
 import { SignInModal } from './sign-in-modal';
 import { useAuthContext } from './session-provider';
-import { DocsButton } from './docs-button';
 
 export function SignedOutHeader() {
   const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
@@ -21,10 +20,10 @@ export function SignedOutHeader() {
     <header className="flex items-center w-full px-4 py-3 bg-background gap-4 sticky top-0 z-10 border-b">
       <Link href="/" className="flex items-center">
         <Image
-          src="/images/pipedream.png"
+          src="/images/pipedream-icon.png"
           alt="Pipedream"
-          width={108}
-          height={24}
+          width={43}
+          height={10}
           priority
           className="dark:invert"
         />
@@ -32,8 +31,7 @@ export function SignedOutHeader() {
       
       <div className="flex items-center gap-3 ml-auto">
         <ManageAccountButton className="hidden md:flex" style="secondary" />
-        <DocsButton className="hidden md:flex" style="secondary" />
-        <Button onClick={handleGetStarted} variant="blue">
+        <Button onClick={handleGetStarted} variant="pink">
           Get started
         </Button>
       </div>

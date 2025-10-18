@@ -36,10 +36,10 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               className="flex flex-row gap-3 items-center px-4 cursor-pointer"
             >
               <Image
-                src="/images/pipedream.svg"
+                src="/images/pipedream-icon.png"
                 alt="Pipedream"
-                width={108}
-                height={24}
+                width={43}
+                height={10}
                 priority
                 className="dark:invert h-auto w-auto"
               />

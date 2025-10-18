@@ -45,10 +45,10 @@ export function SignInModal({ isOpen, onClose }: SignInModalProps) {
           {/* Pipedream Logo */}
           <div className="mb-6">
             <Image
-              src="/images/pipedream.svg"
+              src="/images/pipedream-icon.png"
               alt="Pipedream"
-              width={180}
-              height={40}
+              width={72}
+              height={16}
               priority
               className="dark:invert"
             />
@@ -57,14 +57,14 @@ export function SignInModal({ isOpen, onClose }: SignInModalProps) {
           <AlertDialogHeader className="text-center mb-6 w-full">
             <AlertDialogTitle className="text-xl"></AlertDialogTitle>
             <AlertDialogDescription className="mt-2 text-center text-md text">
-              To use Pipedream Chat, sign up for free or sign in
+              To use MCP Machine Chat, sign up for free or sign in
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           {/* Sign in with Google button */}
           <Button 
             className="w-full max-w-xs mb-6"
-            variant="blue"
+            variant="pink"
             onClick={handleSignIn}
           >
             <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512">
