@@ -8,7 +8,7 @@ import { useAuthContext } from './session-provider';
 
 export const Overview = () => {
   const { isAuthDisabled, isPersistenceDisabled } = useAuthContext();
-  
+
   return (
     <motion.div
       key="overview"
@@ -33,29 +33,33 @@ export const Overview = () => {
             <ChatBubbleIcon size={32} />
           </p>
           <p>
-            This app uses{" "}
+            This app uses{' '}
             <Link
               className="font-medium underline underline-offset-4"
               href="https://machine.myapps.ai"
               target="_blank"
             >
               Machine MCP
-            </Link>{" "}
+            </Link>{' '}
             to let you chat with any app.
           </p>
           <p>
-            With {" "}
+            With{' '}
             <Link
               className="font-medium underline underline-offset-4"
               href="https://machine.myapps.ai/"
               target="_blank"
             >
-              2,800+ built-in APIs
-            </Link>{" "}
-             {" "}and 10k+ tools, use Machine MCP to supercharge your AI app or agent.
+              3,000+ built-in APIs
+            </Link>{' '}
+            and 10k+ tools, use Pipedream MCP to supercharge your AI app or
+            agent.
           </p>
         </div>
-        <InfoBanner isAuthDisabled={isAuthDisabled} isPersistenceDisabled={isPersistenceDisabled} />
+        <InfoBanner
+          isAuthDisabled={isAuthDisabled}
+          isPersistenceDisabled={isPersistenceDisabled}
+        />
       </div>
     </motion.div>
   );

@@ -217,9 +217,16 @@ export const getRegularPrompt = () => `<role>
 
     - NEVER reference tool names — that's too technical and too much detail. You
     can reference the tool's function, but not the tool itself.
-    
+
     - For technical questions, provide concise, accurate answers without unnecessary
     technical jargon. When explaining APIs or concepts, use simple examples when helpful.
+
+    - When formatting text in markdown:
+      - Use single backticks \`like this\` for inline code snippets, IDs, variable names, property names, and short values
+      - Use triple backticks for multi-line code blocks only:
+        \`\`\`language
+        code here
+        \`\`\`
   </style_and_output>`
 
 export const systemPrompt = ({
