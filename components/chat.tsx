@@ -83,27 +83,14 @@ export function Chat({
               Missing AI API Keys
             </h2>
             <p className="text-red-700 dark:text-red-300 mb-4">
-              Oops, the chat app requires at least one of these environment
-              variables to be set:
+              Oops, the chat app requires this environment variable to be set:
             </p>
             <ul className="text-left space-y-2 mb-4">
               <li className="text-red-600 dark:text-red-400">
                 <code className="bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded text-sm">
-                  OPENAI_API_KEY
+                  OPENROUTER_API_KEY
                 </code>{' '}
-                - For OpenAI models
-              </li>
-              <li className="text-red-600 dark:text-red-400">
-                <code className="bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded text-sm">
-                  ANTHROPIC_API_KEY
-                </code>{' '}
-                - For Anthropic Claude models
-              </li>
-              <li className="text-red-600 dark:text-red-400">
-                <code className="bg-red-100 dark:bg-red-900/30 px-2 py-1 rounded text-sm">
-                  GOOGLE_GENERATIVE_AI_API_KEY
-                </code>{' '}
-                - For Google Gemini models
+                - For OpenRouter language models
               </li>
             </ul>
             <p className="text-sm text-red-600 dark:text-red-400">

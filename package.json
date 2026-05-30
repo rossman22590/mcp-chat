@@ -33,6 +33,7 @@
     "@codemirror/view": "^6.35.3",
     "@datadog/browser-rum": "^6.6.4",
     "@modelcontextprotocol/sdk": "^1.10.2",
+    "@openrouter/ai-sdk-provider": "0.7.5",
     "@pipedream/sdk": "2.0.0-rc.8",
     "@radix-ui/react-alert-dialog": "^1.1.2",
     "@radix-ui/react-collapsible": "^1.1.3",

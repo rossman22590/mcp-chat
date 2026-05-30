@@ -28,7 +28,7 @@
 
 ## Model Providers
 
-The demo app currently uses models from Anthropic, OpenAI, and Gemini, but the AI SDK supports [many more](https://sdk.vercel.ai/providers/ai-sdk-providers).
+The demo app routes language models through [OpenRouter](https://openrouter.ai/), so Anthropic, OpenAI, Gemini, and other model providers can be accessed with a single OpenRouter API key.
 
 ### Prerequisites
 
@@ -37,13 +37,13 @@ To run or deploy this app, you'll need:
 1. A [Pipedream account](https://pipedream.com/auth/signup)
 2. A [Pipedream project](https://pipedream.com/docs/projects/#creating-projects). Accounts connected via MCP will be stored here.
 3. [Pipedream OAuth credentials](https://pipedream.com/docs/rest-api/auth/#oauth)
-4. An [OpenAI API key](https://platform.openai.com/api-keys)
+4. An [OpenRouter API key](https://openrouter.ai/settings/keys)
 
 ## Deploy Your Own
 
 One-click deploy this app to Vercel:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FPipedreamHQ%2Fmcp-chat&env=PIPEDREAM_CLIENT_ID,PIPEDREAM_CLIENT_SECRET,PIPEDREAM_PROJECT_ID,PIPEDREAM_PROJECT_ENVIRONMENT,AUTH_SECRET,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,OPENAI_API_KEY,EXA_API_KEY,POSTGRES_URL&envDescription=API%20keys%20need%20to%20run%20the%20app)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FPipedreamHQ%2Fmcp-chat&env=PIPEDREAM_CLIENT_ID,PIPEDREAM_CLIENT_SECRET,PIPEDREAM_PROJECT_ID,PIPEDREAM_PROJECT_ENVIRONMENT,AUTH_SECRET,GOOGLE_CLIENT_ID,GOOGLE_CLIENT_SECRET,OPENROUTER_API_KEY,EXA_API_KEY,POSTGRES_URL&envDescription=API%20keys%20need%20to%20run%20the%20app)
 
 ## Running locally
 
