@@ -1,13 +1,14 @@
 import { redirect } from 'next/navigation';
+import { connection } from 'next/server';
 
 import { updateUserAdminAction } from '@/app/(chat)/admin/actions';
 import { getAdminEmails, requireAdminSession } from '@/lib/admin';
 import { CREDIT_PLANS } from '@/lib/credits';
 import { getUsersForAdmin } from '@/lib/db/queries';
 
-export const dynamic = 'force-dynamic';
-
 export default async function AdminPage() {
+  await connection();
+
   const adminSession = await requireAdminSession();
 
   if (!adminSession) {

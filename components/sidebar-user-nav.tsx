@@ -18,7 +18,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { isDefaultAdminEmail } from '@/lib/admin-config';
 import { fetcher } from '@/lib/utils';
 
 type CreditBalance = {
@@ -26,13 +25,21 @@ type CreditBalance = {
   plan: string;
 };
 
+type AdminStatus = {
+  isAdmin: boolean;
+};
+
 export function SidebarUserNav({ user }: { user: User }) {
   const { setTheme, theme } = useTheme();
-  const isAdmin = isDefaultAdminEmail(user.email);
   const { data: creditBalance } = useSWR<CreditBalance>(
     user?.id ? '/api/credits' : null,
     fetcher,
   );
+  const { data: adminStatus } = useSWR<AdminStatus>(
+    user?.id ? '/api/admin/status' : null,
+    fetcher,
+  );
+  const isAdmin = adminStatus?.isAdmin ?? false;
   const planLabel = creditBalance?.plan
     ? creditBalance.plan.charAt(0).toUpperCase() + creditBalance.plan.slice(1)
     : 'Premium';
