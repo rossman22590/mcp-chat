@@ -205,8 +205,6 @@ export async function getAdminUsers(filters: AdminUserFilters = {}) {
 
 export async function getAdminUsageTotals() {
   try {
-    const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-
     const [userTotals] = await db
       .select({
         totalUsers: count(user.id),
@@ -221,7 +219,7 @@ export async function getAdminUsageTotals() {
     const [chatTotals] = await db
       .select({
         totalChats: sql<number>`count(${chat.id})::int`,
-        chatsLast24Hours: sql<number>`count(*) filter (where ${chat.createdAt} >= ${since})::int`,
+        chatsLast24Hours: sql<number>`count(*) filter (where ${chat.createdAt} >= now() - interval '24 hours')::int`,
         lastChatAt: sql<Date | null>`max(${chat.createdAt})`,
       })
       .from(chat);
