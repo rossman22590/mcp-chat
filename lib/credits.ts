@@ -1,4 +1,4 @@
-export const CREDIT_USD_VALUE = 0.01;
+export const CREDIT_USD_VALUE = 0.0001;
 export const MINIMUM_CHAT_CREDIT_COST = 1;
 export const OPENROUTER_PRICE_MARKUP_MULTIPLIER = 1.5;
 
@@ -52,8 +52,8 @@ export type CreditPlan = (typeof CREDIT_PLANS)[number];
 export const DEFAULT_CREDIT_PLAN: CreditPlan = 'premium';
 
 export const PLAN_MONTHLY_CREDITS: Record<CreditPlan, number> = {
-  premium: 500,
-  ultra: 1500,
+  premium: 50_000,
+  ultra: 150_000,
 };
 
 export const INITIAL_USER_CREDITS = PLAN_MONTHLY_CREDITS[DEFAULT_CREDIT_PLAN];

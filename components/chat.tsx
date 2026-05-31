@@ -55,6 +55,7 @@ export function Chat({
     onFinish: () => {
       mutate('/api/history');
       mutate('/api/credits');
+      mutate('/api/credits/transactions');
     },
     onError: (error) => {
       // Check if error is a 401 unauthorized due to authentication

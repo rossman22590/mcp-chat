@@ -142,6 +142,33 @@ export async function getUserCreditBalance({ userId }: { userId: string }) {
   }
 }
 
+export async function getUserCreditTransactions({
+  userId,
+  limit = 50,
+}: {
+  userId: string;
+  limit?: number;
+}) {
+  try {
+    return await db
+      .select({
+        id: creditTransaction.id,
+        type: creditTransaction.type,
+        amount: creditTransaction.amount,
+        balanceAfter: creditTransaction.balanceAfter,
+        reason: creditTransaction.reason,
+        createdAt: creditTransaction.createdAt,
+      })
+      .from(creditTransaction)
+      .where(eq(creditTransaction.userId, userId))
+      .orderBy(desc(creditTransaction.createdAt))
+      .limit(limit);
+  } catch (error) {
+    console.error('Failed to get user credit transactions');
+    throw error;
+  }
+}
+
 export async function consumeUserCredit({
   userId,
   amount = MINIMUM_CHAT_CREDIT_COST,

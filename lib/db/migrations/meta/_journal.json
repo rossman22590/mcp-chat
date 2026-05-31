@@ -71,6 +71,13 @@
       "when": 1780193549963,
       "tag": "0009_monthly_plan_credits",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1780197578354,
+      "tag": "0010_credit_precision",
+      "breakpoints": true
     }
   ]
 }
