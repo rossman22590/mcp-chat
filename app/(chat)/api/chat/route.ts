@@ -24,7 +24,10 @@ import {
 } from 'ai';
 import { generateTitleFromUserMessage } from '../../actions';
 import { streamText } from './streamText';
-import { CREDIT_COST_PER_CHAT_MESSAGE } from '@/lib/credits';
+import {
+  MINIMUM_CHAT_CREDIT_COST,
+  calculateTokenCreditCharge,
+} from '@/lib/credits';
 
 export const maxDuration = 60;
 
@@ -104,10 +107,7 @@ export async function POST(request: Request) {
         );
       }
 
-      if (
-        !creditBalance ||
-        creditBalance.credits < CREDIT_COST_PER_CHAT_MESSAGE
-      ) {
+      if (!creditBalance || creditBalance.credits < MINIMUM_CHAT_CREDIT_COST) {
         return Response.json(
           {
             error: 'Insufficient credits',
@@ -123,18 +123,6 @@ export async function POST(request: Request) {
         : await generateTitleFromUserMessage({
             message: userMessage,
           });
-
-      const updatedCreditBalance = await consumeUserCredit({ userId });
-
-      if (!updatedCreditBalance) {
-        return Response.json(
-          {
-            error: 'Insufficient credits',
-            credits: 0,
-          },
-          { status: 402 },
-        );
-      }
 
       if (!chat && title) {
         await saveChat({ id, userId, title });
@@ -170,8 +158,13 @@ export async function POST(request: Request) {
             experimental_transform: smoothStream({ chunking: 'word' }),
             experimental_generateMessageId: generateUUID,
             getTools: () => mcpSession.tools({ useCache: false }),
-            onFinish: async ({ response }) => {
+            onFinish: async ({ response, usage }) => {
               if (userId && shouldPersistData()) {
+                const tokenCharge = calculateTokenCreditCharge({
+                  modelId: selectedChatModel,
+                  usage,
+                });
+
                 try {
                   const assistantId = getTrailingMessageId({
                     messages: response.messages.filter(
@@ -200,6 +193,15 @@ export async function POST(request: Request) {
                         createdAt: new Date(),
                       },
                     ],
+                  });
+
+                  await consumeUserCredit({
+                    userId,
+                    amount: tokenCharge.credits,
+                    reason:
+                      `Chat message: ${tokenCharge.modelId}, ` +
+                      `${tokenCharge.inputTokens} input tokens, ` +
+                      `${tokenCharge.outputTokens} output tokens`,
                   });
                 } catch (error) {
                   console.error('Failed to save chat');

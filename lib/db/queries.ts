@@ -19,7 +19,7 @@ import {
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
 import {
-  CREDIT_COST_PER_CHAT_MESSAGE,
+  MINIMUM_CHAT_CREDIT_COST,
   getNextMonthlyCreditResetDate,
   getPlanMonthlyCredits,
   type CreditPlan,
@@ -144,10 +144,12 @@ export async function getUserCreditBalance({ userId }: { userId: string }) {
 
 export async function consumeUserCredit({
   userId,
-  amount = CREDIT_COST_PER_CHAT_MESSAGE,
+  amount = MINIMUM_CHAT_CREDIT_COST,
+  reason = 'Chat message',
 }: {
   userId: string;
   amount?: number;
+  reason?: string;
 }) {
   try {
     return await db.transaction(async (tx) => {
@@ -173,7 +175,7 @@ export async function consumeUserCredit({
         .set({
           credits: sql`${user.credits} - ${amount}`,
         })
-        .where(and(eq(user.id, userId), gte(user.credits, amount)))
+        .where(eq(user.id, userId))
         .returning({
           credits: user.credits,
           plan: user.plan,
@@ -187,7 +189,7 @@ export async function consumeUserCredit({
           type: 'spend',
           amount: -amount,
           balanceAfter: updatedUser.credits,
-          reason: 'Chat message',
+          reason,
           createdAt: new Date(),
         });
       }
