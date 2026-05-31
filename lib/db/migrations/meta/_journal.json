@@ -50,6 +50,13 @@
       "when": 1743691174621,
       "tag": "0006_huge_blockbuster",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1780174384456,
+      "tag": "0007_user_credits",
+      "breakpoints": true
     }
   ]
 }

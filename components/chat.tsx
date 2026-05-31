@@ -54,11 +54,17 @@ export function Chat({
     generateId: generateUUID,
     onFinish: () => {
       mutate('/api/history');
+      mutate('/api/credits');
     },
     onError: (error) => {
       // Check if error is a 401 unauthorized due to authentication
       if (error instanceof Error && error.message.includes('401')) {
         // This error is likely from the submitForm auth check, so we don't need to show an error
+        return;
+      }
+      if (error instanceof Error && error.message.includes('402')) {
+        toast.error('You are out of credits.');
+        mutate('/api/credits');
         return;
       }
       toast.error('An error occurred, please try again!');

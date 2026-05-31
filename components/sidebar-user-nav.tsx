@@ -4,6 +4,7 @@ import Image from 'next/image';
 import type { User } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import { useTheme } from 'next-themes';
+import useSWR from 'swr';
 
 import {
   DropdownMenu,
@@ -17,9 +18,24 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
+import { isDefaultAdminEmail } from '@/lib/admin-config';
+import { fetcher } from '@/lib/utils';
+
+type CreditBalance = {
+  credits: number;
+  plan: string;
+};
 
 export function SidebarUserNav({ user }: { user: User }) {
   const { setTheme, theme } = useTheme();
+  const isAdmin = isDefaultAdminEmail(user.email);
+  const { data: creditBalance } = useSWR<CreditBalance>(
+    user?.id ? '/api/credits' : null,
+    fetcher,
+  );
+  const planLabel = creditBalance?.plan
+    ? creditBalance.plan.charAt(0).toUpperCase() + creditBalance.plan.slice(1)
+    : 'Premium';
 
   return (
     <SidebarMenu>
@@ -53,6 +69,21 @@ export function SidebarUserNav({ user }: { user: User }) {
                 Accounts
               </a>
             </DropdownMenuItem>
+            {isAdmin && (
+              <DropdownMenuItem asChild>
+                <a href="/admin" className="w-full cursor-pointer">
+                  Admin
+                </a>
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
+            <div className="px-2 py-1.5 text-xs text-muted-foreground">
+              <div className="font-medium text-foreground">{planLabel}</div>
+              <div>
+                {creditBalance ? creditBalance.credits : '...'} credits
+                remaining
+              </div>
+            </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <button
@@ -68,7 +99,7 @@ export function SidebarUserNav({ user }: { user: User }) {
               </button>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <div className='text-xs text-muted-foreground px-2 py-1'>
+            <div className="text-xs text-muted-foreground px-2 py-1">
               User ID: {user.id}
             </div>
           </DropdownMenuContent>

@@ -1,7 +1,7 @@
 import 'server-only';
 
 import { genSaltSync, hashSync } from 'bcrypt-ts';
-import { and, asc, desc, eq, gt, gte, inArray } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gt, gte, inArray, sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
@@ -16,7 +16,8 @@ import {
   vote,
   type DBMessage,
 } from './schema';
-import { ArtifactKind } from '@/components/artifact';
+import type { ArtifactKind } from '@/components/artifact';
+import { CREDIT_COST_PER_CHAT_MESSAGE, type CreditPlan } from '@/lib/credits';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -43,6 +44,97 @@ export async function createUser(email: string, password: string) {
     return await db.insert(user).values({ email, password: hash });
   } catch (error) {
     console.error('Failed to create user in database');
+    throw error;
+  }
+}
+
+export async function getUserCreditBalance({ userId }: { userId: string }) {
+  try {
+    const [selectedUser] = await db
+      .select({
+        credits: user.credits,
+        plan: user.plan,
+      })
+      .from(user)
+      .where(eq(user.id, userId));
+
+    return selectedUser;
+  } catch (error) {
+    console.error('Failed to get user credit balance');
+    throw error;
+  }
+}
+
+export async function consumeUserCredit({
+  userId,
+  amount = CREDIT_COST_PER_CHAT_MESSAGE,
+}: {
+  userId: string;
+  amount?: number;
+}) {
+  try {
+    const [updatedUser] = await db
+      .update(user)
+      .set({
+        credits: sql`${user.credits} - ${amount}`,
+      })
+      .where(and(eq(user.id, userId), gte(user.credits, amount)))
+      .returning({
+        credits: user.credits,
+        plan: user.plan,
+      });
+
+    return updatedUser;
+  } catch (error) {
+    console.error('Failed to consume user credit');
+    throw error;
+  }
+}
+
+export async function getUsersForAdmin() {
+  try {
+    return await db
+      .select({
+        id: user.id,
+        email: user.email,
+        plan: user.plan,
+        credits: user.credits,
+        chatCount: count(chat.id),
+      })
+      .from(user)
+      .leftJoin(chat, eq(chat.userId, user.id))
+      .groupBy(user.id, user.email, user.plan, user.credits)
+      .orderBy(asc(user.email), asc(user.id));
+  } catch (error) {
+    console.error('Failed to get users for admin');
+    throw error;
+  }
+}
+
+export async function updateUserPlanAndCredits({
+  userId,
+  plan,
+  credits,
+}: {
+  userId: string;
+  plan: CreditPlan;
+  credits: number;
+}) {
+  try {
+    const [updatedUser] = await db
+      .update(user)
+      .set({ plan, credits })
+      .where(eq(user.id, userId))
+      .returning({
+        id: user.id,
+        email: user.email,
+        plan: user.plan,
+        credits: user.credits,
+      });
+
+    return updatedUser;
+  } catch (error) {
+    console.error('Failed to update user plan and credits');
     throw error;
   }
 }
