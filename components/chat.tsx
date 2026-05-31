@@ -67,6 +67,11 @@ export function Chat({
         mutate('/api/credits');
         return;
       }
+      if (error instanceof Error && error.message.includes('403')) {
+        toast.error('Your account is suspended.');
+        mutate('/api/credits');
+        return;
+      }
       toast.error('An error occurred, please try again!');
     },
   });

@@ -1,12 +1,11 @@
-import { isAdminEmail } from '@/lib/admin';
-import { getEffectiveSession } from '@/lib/auth-utils';
+import { requireAdminSession } from '@/lib/admin';
 
 export async function GET() {
-  const session = await getEffectiveSession();
+  const session = await requireAdminSession();
 
   return Response.json(
     {
-      isAdmin: isAdminEmail(session?.user?.email),
+      isAdmin: Boolean(session),
     },
     {
       headers: { 'Cache-Control': 'no-store' },

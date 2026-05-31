@@ -8,6 +8,7 @@ import postgres from 'postgres';
 import {
   user,
   chat,
+  creditTransaction,
   type User,
   document,
   type Suggestion,
@@ -17,7 +18,12 @@ import {
   type DBMessage,
 } from './schema';
 import type { ArtifactKind } from '@/components/artifact';
-import { CREDIT_COST_PER_CHAT_MESSAGE, type CreditPlan } from '@/lib/credits';
+import {
+  CREDIT_COST_PER_CHAT_MESSAGE,
+  getNextMonthlyCreditResetDate,
+  getPlanMonthlyCredits,
+  type CreditPlan,
+} from '@/lib/credits';
 
 // Optionally, if not using email/pass login, you can
 // use the Drizzle adapter for Auth.js / NextAuth
@@ -48,17 +54,88 @@ export async function createUser(email: string, password: string) {
   }
 }
 
+type UserCreditState = {
+  id: string;
+  credits: number;
+  plan: CreditPlan;
+  isSuspended: boolean;
+  creditResetAt: Date;
+};
+
+async function resetMonthlyCreditsIfDue(
+  tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
+  currentUser: UserCreditState,
+) {
+  const now = new Date();
+
+  if (currentUser.creditResetAt > now) {
+    return currentUser;
+  }
+
+  const monthlyCredits = getPlanMonthlyCredits(currentUser.plan);
+  const nextResetAt = getNextMonthlyCreditResetDate(now);
+  const creditDelta = monthlyCredits - currentUser.credits;
+
+  const [updatedUser] = await tx
+    .update(user)
+    .set({
+      credits: monthlyCredits,
+      creditResetAt: nextResetAt,
+    })
+    .where(eq(user.id, currentUser.id))
+    .returning({
+      id: user.id,
+      credits: user.credits,
+      plan: user.plan,
+      isSuspended: user.isSuspended,
+      creditResetAt: user.creditResetAt,
+    });
+
+  if (creditDelta !== 0) {
+    await tx.insert(creditTransaction).values({
+      userId: currentUser.id,
+      type: creditDelta > 0 ? 'grant' : 'adjustment',
+      amount: creditDelta,
+      balanceAfter: monthlyCredits,
+      reason: 'Monthly plan reset',
+      createdAt: now,
+    });
+  }
+
+  return updatedUser;
+}
+
 export async function getUserCreditBalance({ userId }: { userId: string }) {
   try {
-    const [selectedUser] = await db
-      .select({
-        credits: user.credits,
-        plan: user.plan,
-      })
-      .from(user)
-      .where(eq(user.id, userId));
+    return await db.transaction(async (tx) => {
+      const [selectedUser] = await tx
+        .select({
+          id: user.id,
+          credits: user.credits,
+          plan: user.plan,
+          isSuspended: user.isSuspended,
+          creditResetAt: user.creditResetAt,
+        })
+        .from(user)
+        .where(eq(user.id, userId));
 
-    return selectedUser;
+      if (!selectedUser) {
+        return selectedUser;
+      }
+
+      const currentUser = await resetMonthlyCreditsIfDue(tx, selectedUser);
+
+      if (!currentUser) {
+        return currentUser;
+      }
+
+      return {
+        credits: currentUser.credits,
+        plan: currentUser.plan,
+        isSuspended: currentUser.isSuspended,
+        creditResetAt: currentUser.creditResetAt,
+      };
+    });
   } catch (error) {
     console.error('Failed to get user credit balance');
     throw error;
@@ -73,20 +150,69 @@ export async function consumeUserCredit({
   amount?: number;
 }) {
   try {
-    const [updatedUser] = await db
-      .update(user)
-      .set({
-        credits: sql`${user.credits} - ${amount}`,
-      })
-      .where(and(eq(user.id, userId), gte(user.credits, amount)))
-      .returning({
-        credits: user.credits,
-        plan: user.plan,
-      });
+    return await db.transaction(async (tx) => {
+      const [selectedUser] = await tx
+        .select({
+          id: user.id,
+          credits: user.credits,
+          plan: user.plan,
+          isSuspended: user.isSuspended,
+          creditResetAt: user.creditResetAt,
+        })
+        .from(user)
+        .where(eq(user.id, userId));
 
-    return updatedUser;
+      if (!selectedUser) {
+        return selectedUser;
+      }
+
+      await resetMonthlyCreditsIfDue(tx, selectedUser);
+
+      const [updatedUser] = await tx
+        .update(user)
+        .set({
+          credits: sql`${user.credits} - ${amount}`,
+        })
+        .where(and(eq(user.id, userId), gte(user.credits, amount)))
+        .returning({
+          credits: user.credits,
+          plan: user.plan,
+          isSuspended: user.isSuspended,
+          creditResetAt: user.creditResetAt,
+        });
+
+      if (updatedUser) {
+        await tx.insert(creditTransaction).values({
+          userId,
+          type: 'spend',
+          amount: -amount,
+          balanceAfter: updatedUser.credits,
+          reason: 'Chat message',
+          createdAt: new Date(),
+        });
+      }
+
+      return updatedUser;
+    });
   } catch (error) {
     console.error('Failed to consume user credit');
+    throw error;
+  }
+}
+
+export async function getUserAdminAccess({ userId }: { userId: string }) {
+  try {
+    const [selectedUser] = await db
+      .select({
+        isAdmin: user.isAdmin,
+        isSuspended: user.isSuspended,
+      })
+      .from(user)
+      .where(eq(user.id, userId));
+
+    return selectedUser;
+  } catch (error) {
+    console.error('Failed to get user admin access');
     throw error;
   }
 }
@@ -99,11 +225,20 @@ export async function getUsersForAdmin() {
         email: user.email,
         plan: user.plan,
         credits: user.credits,
+        isSuspended: user.isSuspended,
+        isAdmin: user.isAdmin,
         chatCount: count(chat.id),
       })
       .from(user)
       .leftJoin(chat, eq(chat.userId, user.id))
-      .groupBy(user.id, user.email, user.plan, user.credits)
+      .groupBy(
+        user.id,
+        user.email,
+        user.plan,
+        user.credits,
+        user.isSuspended,
+        user.isAdmin,
+      )
       .orderBy(asc(user.email), asc(user.id));
   } catch (error) {
     console.error('Failed to get users for admin');
@@ -123,13 +258,20 @@ export async function updateUserPlanAndCredits({
   try {
     const [updatedUser] = await db
       .update(user)
-      .set({ plan, credits })
+      .set({
+        plan,
+        credits,
+        creditResetAt: getNextMonthlyCreditResetDate(),
+      })
       .where(eq(user.id, userId))
       .returning({
         id: user.id,
         email: user.email,
         plan: user.plan,
         credits: user.credits,
+        creditResetAt: user.creditResetAt,
+        isSuspended: user.isSuspended,
+        isAdmin: user.isAdmin,
       });
 
     return updatedUser;

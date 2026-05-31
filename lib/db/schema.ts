@@ -1,4 +1,4 @@
-import type { InferSelectModel } from 'drizzle-orm';
+import { sql, type InferSelectModel } from 'drizzle-orm';
 import {
   pgTable,
   varchar,
@@ -22,9 +22,46 @@ export const user = pgTable('User', {
     .notNull()
     .default(DEFAULT_CREDIT_PLAN),
   credits: integer('credits').notNull().default(INITIAL_USER_CREDITS),
+  creditResetAt: timestamp('creditResetAt')
+    .notNull()
+    .default(sql`now() + interval '1 month'`),
+  isSuspended: boolean('isSuspended').notNull().default(false),
+  isAdmin: boolean('isAdmin').notNull().default(false),
 });
 
 export type User = InferSelectModel<typeof user>;
+
+export const adminAuditLog = pgTable('AdminAuditLog', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  adminUserId: uuid('adminUserId').references(() => user.id),
+  adminEmail: varchar('adminEmail', { length: 64 }).notNull(),
+  targetUserId: uuid('targetUserId').references(() => user.id),
+  targetEmail: varchar('targetEmail', { length: 64 }),
+  action: varchar('action', { length: 64 }).notNull(),
+  before: json('before').$type<Record<string, unknown> | null>(),
+  after: json('after').$type<Record<string, unknown> | null>(),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type AdminAuditLog = InferSelectModel<typeof adminAuditLog>;
+
+export const creditTransaction = pgTable('CreditTransaction', {
+  id: uuid('id').primaryKey().notNull().defaultRandom(),
+  userId: uuid('userId')
+    .notNull()
+    .references(() => user.id),
+  adminUserId: uuid('adminUserId').references(() => user.id),
+  adminEmail: varchar('adminEmail', { length: 64 }),
+  type: varchar('type', {
+    enum: ['grant', 'spend', 'refund', 'adjustment'],
+  }).notNull(),
+  amount: integer('amount').notNull(),
+  balanceAfter: integer('balanceAfter').notNull(),
+  reason: text('reason'),
+  createdAt: timestamp('createdAt').notNull().defaultNow(),
+});
+
+export type CreditTransaction = InferSelectModel<typeof creditTransaction>;
 
 export const chat = pgTable('Chat', {
   id: uuid('id').primaryKey().notNull().defaultRandom(),

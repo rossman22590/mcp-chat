@@ -57,6 +57,20 @@
       "when": 1780174384456,
       "tag": "0007_user_credits",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1780192777046,
+      "tag": "0008_admin_oversight",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1780193549963,
+      "tag": "0009_monthly_plan_credits",
+      "breakpoints": true
     }
   ]
 }

@@ -1,5 +1,9 @@
 import { getEffectiveSession, shouldPersistData } from '@/lib/auth-utils';
-import { DEFAULT_CREDIT_PLAN, INITIAL_USER_CREDITS } from '@/lib/credits';
+import {
+  DEFAULT_CREDIT_PLAN,
+  INITIAL_USER_CREDITS,
+  getNextMonthlyCreditResetDate,
+} from '@/lib/credits';
 import { getUserCreditBalance } from '@/lib/db/queries';
 
 export async function GET() {
@@ -14,6 +18,8 @@ export async function GET() {
       {
         credits: INITIAL_USER_CREDITS,
         plan: DEFAULT_CREDIT_PLAN,
+        isSuspended: false,
+        creditResetAt: getNextMonthlyCreditResetDate(),
       },
       {
         headers: { 'Cache-Control': 'no-store' },

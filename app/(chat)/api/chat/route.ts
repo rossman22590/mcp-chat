@@ -95,6 +95,15 @@ export async function POST(request: Request) {
 
       const creditBalance = await getUserCreditBalance({ userId });
 
+      if (creditBalance?.isSuspended) {
+        return Response.json(
+          {
+            error: 'Account suspended',
+          },
+          { status: 403 },
+        );
+      }
+
       if (
         !creditBalance ||
         creditBalance.credits < CREDIT_COST_PER_CHAT_MESSAGE
