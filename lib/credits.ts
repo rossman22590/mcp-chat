@@ -52,8 +52,8 @@ export type CreditPlan = (typeof CREDIT_PLANS)[number];
 export const DEFAULT_CREDIT_PLAN: CreditPlan = 'premium';
 
 export const PLAN_MONTHLY_CREDITS: Record<CreditPlan, number> = {
-  premium: 50_000,
-  ultra: 150_000,
+  premium: 10_000,
+  ultra: 20_000,
 };
 
 export const INITIAL_USER_CREDITS = PLAN_MONTHLY_CREDITS[DEFAULT_CREDIT_PLAN];

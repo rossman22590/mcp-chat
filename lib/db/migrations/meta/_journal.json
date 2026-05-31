@@ -78,6 +78,13 @@
       "when": 1780197578354,
       "tag": "0010_credit_precision",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1780197938139,
+      "tag": "0011_plan_credit_allowances",
+      "breakpoints": true
     }
   ]
 }
