@@ -1,10 +1,10 @@
-import { compare } from 'bcrypt-ts';
 import NextAuth, { type User, type Session } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import GoogleProvider from "next-auth/providers/google";
 import { DrizzleAdapter } from "@auth/drizzle-adapter"
 
-import { db, getUser } from '@/lib/db/queries';
+import { validateAitutorSsoToken } from '@/lib/aitutor-sso';
+import { db } from '@/lib/db/queries';
 
 import { authConfig } from './auth.config';
 import { accounts, user } from '@/lib/db/schema';
@@ -27,17 +27,30 @@ export const {
     accountsTable: accounts,
   }),
   providers: [
-    // Credentials({
-    //   credentials: {},
-    //   async authorize({ email, password }: any) {
-    //     const users = await getUser(email);
-    //     if (users.length === 0) return null;
-    //     // biome-ignore lint: Forbidden non-null assertion.
-    //     const passwordsMatch = await compare(password, users[0].password!);
-    //     if (!passwordsMatch) return null;
-    //     return users[0] as any;
-    //   },
-    // }),
+    Credentials({
+      id: 'aitutor-sso',
+      name: 'AiTutor SSO',
+      credentials: {
+        sso_token: { label: 'SSO Token', type: 'text' },
+      },
+      async authorize(credentials) {
+        const ssoToken = credentials?.sso_token;
+        if (!ssoToken || typeof ssoToken !== 'string') {
+          return null;
+        }
+
+        const result = await validateAitutorSsoToken(ssoToken);
+        if (!result.ok) {
+          return null;
+        }
+
+        return {
+          id: result.user.id,
+          email: result.user.email,
+          name: result.user.email ? result.user.email.split('@')[0] : '',
+        };
+      },
+    }),
     GoogleProvider({
       allowDangerousEmailAccountLinking: true,
       clientId: process.env.GOOGLE_CLIENT_ID,
