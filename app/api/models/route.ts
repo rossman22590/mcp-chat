@@ -1,7 +1,7 @@
-import { getAvailableModels } from "@/lib/ai/models"
+import { getAvailableModels } from "@/lib/ai/openrouter-models"
 
 export async function GET() {
-  return Response.json(getAvailableModels(), {
+  return Response.json(await getAvailableModels(), {
     headers: { "Cache-Control": "no-store" },
   })
 }

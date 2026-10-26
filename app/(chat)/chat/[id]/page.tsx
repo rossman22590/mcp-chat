@@ -62,7 +62,7 @@ export async function generateMetadata(
           url: '/opengraph-image.png',
           width: 1200,
           height: 630,
-          alt: 'Pipedream Chat',
+          alt: 'MCP Chat',
         }
       ],
     },
@@ -76,7 +76,7 @@ export async function generateMetadata(
           url: '/twitter-image.png',
           width: 1200,
           height: 630,
-          alt: 'Pipedream Chat',
+          alt: 'MCP Chat',
         }
       ],
     },

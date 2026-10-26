@@ -1,5 +1,6 @@
 import { systemPrompt } from '@/lib/ai/prompts';
-import { myProvider } from '@/lib/ai/providers';
+import { getChatLanguageModel } from '@/lib/ai/providers';
+import { resolveChatModel } from '@/lib/ai/openrouter-models';
 import { isProductionEnvironment } from '@/lib/constants';
 import {
   consumeUserCredit,
@@ -46,6 +47,8 @@ export async function POST(request: Request) {
       messages: Array<UIMessage>;
       selectedChatModel: string;
     } = await request.json();
+
+    const chatModel = await resolveChatModel(selectedChatModel);
 
     const session = await getEffectiveSession();
 
@@ -147,11 +150,11 @@ export async function POST(request: Request) {
 
     return createDataStreamResponse({
       execute: async (dataStream) => {
-        const system = systemPrompt({ selectedChatModel });
+        const system = systemPrompt({ selectedChatModel: chatModel.id });
         await streamText(
           { dataStream, userMessage },
           {
-            model: myProvider.languageModel(selectedChatModel),
+            model: getChatLanguageModel(chatModel.id),
             system,
             messages,
             maxSteps: 20,
@@ -161,7 +164,8 @@ export async function POST(request: Request) {
             onFinish: async ({ response, usage }) => {
               if (userId && shouldPersistData()) {
                 const tokenCharge = calculateTokenCreditCharge({
-                  modelId: selectedChatModel,
+                  modelId: chatModel.id,
+                  pricing: chatModel,
                   usage,
                 });
 

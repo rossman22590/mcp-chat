@@ -36,12 +36,12 @@ export function AppSidebar({ user }: { user: User | undefined }) {
               className="flex flex-row gap-3 items-center px-4 cursor-pointer"
             >
               <Image
-                src="/images/pipedream-icon.png"
-                alt="Pipedream"
+                src="/images/logo.png"
+                alt="MCP Chat"
                 width={43}
                 height={10}
                 priority
-                className="dark:invert h-auto w-auto"
+                className="h-auto w-auto"
               />
             </Link>
             <Tooltip>

@@ -20,12 +20,11 @@ export function SignedOutHeader() {
     <header className="flex items-center w-full px-4 py-3 bg-background gap-4 sticky top-0 z-10 border-b">
       <Link href="/" className="flex items-center">
         <Image
-          src="/images/pipedream-icon.png"
-          alt="Pipedream"
+          src="/images/logo.png"
+          alt="MCP Chat"
           width={43}
           height={10}
           priority
-          className="dark:invert"
         />
       </Link>
       

@@ -22,8 +22,8 @@ export const Overview = () => {
         <div className="rounded-xl p-6 flex flex-col gap-8 leading-relaxed text-center">
           <p className="flex flex-row justify-center gap-4 items-center">
             <Image
-              src="/images/pipedream-icon.png"
-              alt="Pipedream"
+              src="/images/logo.png"
+              alt="MCP Chat"
               width={32}
               height={32}
               className="size-8 rounded-sm"

@@ -141,7 +141,7 @@ export function Chat({
               <div className="text-center mb-8 max-w-3xl">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 mb-2">
                   <h1 className="text-3xl font-bold max-w-[280px] sm:max-w-none leading-tight">
-                    Welcome to MCP Chat by Pipedream
+                    Welcome to MCP Chat
                   </h1>
                   <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 mt-1 sm:mt-0">
                     Alpha

@@ -18,7 +18,6 @@
     "db:up": "drizzle-kit up"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.2.5",
     "@ai-sdk/react": "^1.2.12",
     "@auth/drizzle-adapter": "^1.8.0",
     "@codemirror/lang-javascript": "^6.2.2",

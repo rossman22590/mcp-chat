@@ -42,15 +42,14 @@ export function SignInModal({ isOpen, onClose }: SignInModalProps) {
         </Button>
 
         <div className="flex flex-col items-center text-center justify-center flex-1 w-full">
-          {/* Pipedream Logo */}
+          {/* Logo */}
           <div className="mb-6">
             <Image
-              src="/images/pipedream-icon.png"
-              alt="Pipedream"
+              src="/images/logo.png"
+              alt="MCP Chat"
               width={72}
               height={16}
               priority
-              className="dark:invert"
             />
           </div>
 

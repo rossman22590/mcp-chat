@@ -2,45 +2,19 @@ export const CREDIT_USD_VALUE = 0.0001;
 export const MINIMUM_CHAT_CREDIT_COST = 1;
 export const OPENROUTER_PRICE_MARKUP_MULTIPLIER = 1.5;
 
-export const OPENROUTER_MODEL_PRICES_PER_MILLION = {
-  'gemini-2.5-flash': {
-    input: 0.3,
-    output: 2.5,
-    openRouterModelId: 'google/gemini-2.5-flash',
-  },
-  'gpt-4o-mini': {
-    input: 0.15,
-    output: 0.6,
-    openRouterModelId: 'openai/gpt-4o-mini',
-  },
-  'gpt-4.1': {
-    input: 2,
-    output: 8,
-    openRouterModelId: 'openai/gpt-4.1',
-  },
-  'claude-haiku-4-5': {
-    input: 1,
-    output: 5,
-    openRouterModelId: 'anthropic/claude-haiku-4.5',
-  },
-  'claude-sonnet-4-5': {
-    input: 3,
-    output: 15,
-    openRouterModelId: 'anthropic/claude-sonnet-4.5',
-  },
-} as const;
-
-export type BillableChatModelId =
-  keyof typeof OPENROUTER_MODEL_PRICES_PER_MILLION;
-
 export type TokenUsage = {
   promptTokens: number;
   completionTokens: number;
 };
 
+export type ModelPricing = {
+  inputPricePerMillion: number;
+  outputPricePerMillion: number;
+};
+
 export type TokenCreditCharge = {
   credits: number;
-  modelId: BillableChatModelId;
+  modelId: string;
   inputTokens: number;
   outputTokens: number;
 };
@@ -62,38 +36,24 @@ export function getPlanMonthlyCredits(plan: CreditPlan) {
   return PLAN_MONTHLY_CREDITS[plan];
 }
 
-function isBillableChatModelId(
-  modelId: string,
-): modelId is BillableChatModelId {
-  return modelId in OPENROUTER_MODEL_PRICES_PER_MILLION;
-}
-
-export function getBillableChatModelId(modelId: string): BillableChatModelId {
-  if (isBillableChatModelId(modelId)) {
-    return modelId;
-  }
-
-  return 'claude-sonnet-4-5';
-}
-
 export function calculateTokenCreditCharge({
   modelId,
+  pricing,
   usage,
 }: {
   modelId: string;
+  pricing: ModelPricing;
   usage: TokenUsage;
 }): TokenCreditCharge {
-  const billableModelId = getBillableChatModelId(modelId);
-  const pricing = OPENROUTER_MODEL_PRICES_PER_MILLION[billableModelId];
   const inputTokens = Math.max(0, usage.promptTokens);
   const outputTokens = Math.max(0, usage.completionTokens);
   const inputUsd =
     (inputTokens / 1_000_000) *
-    pricing.input *
+    pricing.inputPricePerMillion *
     OPENROUTER_PRICE_MARKUP_MULTIPLIER;
   const outputUsd =
     (outputTokens / 1_000_000) *
-    pricing.output *
+    pricing.outputPricePerMillion *
     OPENROUTER_PRICE_MARKUP_MULTIPLIER;
   const totalUsd = inputUsd + outputUsd;
   const credits = Math.max(
@@ -103,7 +63,7 @@ export function calculateTokenCreditCharge({
 
   return {
     credits,
-    modelId: billableModelId,
+    modelId,
     inputTokens,
     outputTokens,
   };
